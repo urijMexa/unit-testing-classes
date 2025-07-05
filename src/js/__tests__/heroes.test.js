@@ -5,7 +5,6 @@ import Undead from '../Undead';
 import Zombie from '../Zombie';
 import Daemon from '../Daemon';
 
-
 test.each([
   ['Bowman', Bowman, {
     name: 'Robin', type: 'Bowman', health: 100, level: 1, attack: 25, defence: 25,

@@ -1,5 +1,5 @@
 import Character from '../Character';
-import { Bowman } from '../heroes';
+import Bowman from '../Bowman';
 
 
 describe('Character class constructor', () => {
