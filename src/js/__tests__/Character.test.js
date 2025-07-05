@@ -1,30 +1,69 @@
 import Character from '../Character';
+import { Bowman } from '../heroes';
 
-test('should create a character with valid name and type', () => {
-  const character = new Character('Alex', 'Bowman');
-  const correct = {
-    name: 'Alex',
-    type: 'Bowman',
-    health: 100,
-    level: 1,
-    attack: undefined,
-    defence: undefined,
-  };
-  expect(character).toEqual(correct);
+
+describe('Character class constructor', () => {
+  it('should create a character with valid name and type', () => {
+    const character = new Character('Alex', 'Bowman');
+    expect(character).toEqual({
+      name: 'Alex',
+      type: 'Bowman',
+      health: 100,
+      level: 1,
+      attack: undefined,
+      defence: undefined,
+    });
+  });
+
+  it.each([
+    ['A', 'Bowman', 'Name must be a string with length between 2 and 10 characters.'],
+    ['SuperLongName', 'Bowman', 'Name must be a string with length between 2 and 10 characters.'],
+    ['Alex', 'Peasant', 'Invalid character type.'],
+  ])('should throw an error for invalid arguments', (name, type, expectedError) => {
+    expect(() => new Character(name, type)).toThrow(expectedError);
+  });
 });
 
-test('should throw an error for invalid name (too short)', () => {
-  expect(() => new Character('A', 'Bowman')).toThrow('Name must be a string with length between 2 and 10 characters.');
+describe('levelUp method', () => {
+  it('should correctly level up a character', () => {
+    const bowman = new Bowman('Robin');
+    bowman.health = 50;
+    bowman.levelUp();
+
+    expect(bowman.level).toBe(2);
+    expect(bowman.attack).toBe(25 * 1.2); // 30
+    expect(bowman.defence).toBe(25 * 1.2); // 30
+    expect(bowman.health).toBe(100);
+  });
+
+  it('should throw an error if character is dead', () => {
+    const bowman = new Bowman('Robin');
+    bowman.health = 0;
+
+    expect(() => bowman.levelUp()).toThrow('Cannot level up a dead character.');
+  });
 });
 
-test('should throw an error for invalid name (too long)', () => {
-  expect(() => new Character('SuperLongName', 'Bowman')).toThrow('Name must be a string with length between 2 and 10 characters.');
-});
+describe('damage method', () => {
+  it('should correctly reduce health based on damage and defence', () => {
+    const bowman = new Bowman('Robin'); // attack: 25, defence: 25
+    bowman.damage(10);
 
-test('should throw an error for invalid name (not a string)', () => {
-  expect(() => new Character(12345, 'Bowman')).toThrow('Name must be a string with length between 2 and 10 characters.');
-});
+    expect(bowman.health).toBe(100 - 7.5); // 92.5
+  });
 
-test('should throw an error for invalid type', () => {
-  expect(() => new Character('Alex', 'Peasant')).toThrow('Invalid character type.');
+  it('should not allow health to go below zero', () => {
+    const bowman = new Bowman('Robin');
+    bowman.damage(200);
+
+    expect(bowman.health).toBe(0);
+  });
+
+  it('should not change health if character is already dead', () => {
+    const bowman = new Bowman('Robin');
+    bowman.health = 0;
+    bowman.damage(50);
+
+    expect(bowman.health).toBe(0);
+  });
 });
